@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家的蜕变 · 赛博朋克装修账本</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #030814;
+      --bg-deep:   #010610;
+      --bg-card:   #070d1a;
+      --bg-card2:  #0a1628;
+      --cyan:      #00f5ff;
+      --cyan-dim:  #00a8b5;
+      --cyan-glow: rgba(0, 245, 255, 0.25);
+      --magenta:   #ff2d78;
+      --magenta-dim: #b02055;
+      --magenta-glow: rgba(255, 45, 120, 0.2);
+      --yellow:    #ffd700;
+      --yellow-dim:#b89b00;
+      --green:     #39ff14;
+      --green-dim: #2bb80f;
+      --text:      #c8d8e8;
+      --text-dim:  #5a7a94;
+      --border:    rgba(0, 245, 255, 0.15);
+      --border2:   rgba(0, 245, 255, 0.08);
+      --scanline:  rgba(0, 245, 255, 0.03);
+      --font-disp: 'Orbitron', 'Share Tech Mono', monospace;
+      --font-body: 'Noto Sans SC', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Scanlines overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        var(--scanline) 2px,
+        var(--scanline) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Grid bg ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glow utility ── */
+    .glow-cyan  { text-shadow: 0 0 10px var(--cyan),  0 0 30px var(--cyan-glow);  }
+    .glow-mag   { text-shadow: 0 0 10px var(--magenta), 0 0 30px var(--magenta-glow); }
+    .glow-yellow{ text-shadow: 0 0 8px var(--yellow),  0 0 20px rgba(255,215,0,0.3); }
+    .glow-green { text-shadow: 0 0 8px var(--green),    0 0 20px rgba(57,255,20,0.25); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      padding: 80px 24px 100px;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse at center, rgba(0,245,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Glitch title */
+    .hero-glitch {
+      position: relative;
+      display: inline-block;
+      font-family: var(--font-disp);
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 900;
+      color: var(--cyan);
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      animation: flicker 4s ease-in-out infinite;
+    }
+
+    .hero-glitch::before,
+    .hero-glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+    }
+
+    .hero-glitch::before {
+      color: var(--magenta);
+      animation: glitch-top 3s ease-in-out infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+      left: 3px;
+    }
+
+    .hero-glitch::after {
+      color: var(--green);
+      animation: glitch-bot 4s ease-in-out infinite;
+      clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+      left: -3px;
+    }
+
+    @keyframes glitch-top {
+      0%,90%,100%  { transform: translate(0); }
+      92%          { transform: translate(-4px, 0); }
+      94%          { transform: translate(4px, 0); }
+      96%          { transform: translate(-2px, 0); }
+    }
+    @keyframes glitch-bot {
+      0%,85%,100%  { transform: translate(0); }
+      87%          { transform: translate(3px, 0); }
+      89%          { transform: translate(-3px, 0); }
+      91%          { transform: translate(2px, 0); }
+    }
+
+    @keyframes flicker {
+      0%,95%,100% { opacity: 1; }
+      96%         { opacity: 0.8; }
+      97%         { opacity: 1; }
+      98%         { opacity: 0.9; }
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* Cyber badge */
+    .cyber-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--cyan);
+      border-radius: 2px;
+      padding: 5px 16px;
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 32px;
+      position: relative;
+      background: rgba(0,245,255,0.05);
+    }
+    .cyber-badge::before,
+    .cyber-badge::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 6px;
+      border: 1px solid var(--cyan);
+    }
+    .cyber-badge::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+    .cyber-badge::after  { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+    .cyber-badge .dot {
+      width: 6px; height: 6px; background: var(--green);
+      border-radius: 50%; box-shadow: 0 0 6px var(--green);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+      50%     { opacity: 0.4; box-shadow: 0 0 2px var(--green); }
+    }
+
+    /* ── Stats ── */
+    .stats-wrap { max-width: 1000px; margin: -40px auto 0; padding: 0 24px; position: relative; z-index: 2; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: card-in 0.6s ease forwards;
+      cursor: default;
+    }
+    .stat-card:nth-child(2) { animation-delay: 0.08s; }
+    .stat-card:nth-child(3) { animation-delay: 0.16s; }
+    .stat-card:nth-child(4) { animation-delay: 0.24s; }
+
+    @keyframes card-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Corner accents */
+    .stat-card::before,
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      width: 12px; height: 12px;
+    }
+    .stat-card::before {
+      top: 0; left: 0;
+      border-top: 2px solid var(--cyan);
+      border-left: 2px solid var(--cyan);
+    }
+    .stat-card::after {
+      bottom: 0; right: 0;
+      border-bottom: 2px solid var(--cyan);
+      border-right: 2px solid var(--cyan);
+    }
+
+    .stat-card:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 30px var(--cyan-glow), inset 0 0 30px rgba(0,245,255,0.03);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card .corner-tr,
+    .stat-card .corner-bl {
+      position: absolute;
+      width: 12px; height: 12px;
+    }
+    .stat-card .corner-tr { top: 0; right: 0; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+    .stat-card .corner-bl { bottom: 0; left: 0; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+
+    /* Hover corner color shift */
+    .stat-card:nth-child(2):hover::before,
+    .stat-card:nth-child(2):hover .corner-tr { border-color: var(--magenta); }
+    .stat-card:nth-child(3):hover::before,
+    .stat-card:nth-child(3):hover .corner-tr { border-color: var(--yellow); }
+    .stat-card:nth-child(4):hover::before,
+    .stat-card:nth-child(4):hover .corner-tr { border-color: var(--green); }
+
+    .stat-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+    .stat-label {
+      font-family: var(--font-disp);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: var(--font-disp);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .stat-sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Stat card accent colors */
+    .stat-card:nth-child(1) .stat-value { color: var(--yellow);  }
+    .stat-card:nth-child(2) .stat-value { color: var(--cyan);    }
+    .stat-card:nth-child(3) .stat-value { color: var(--magenta); }
+    .stat-card:nth-child(4) .stat-value { color: var(--green);   }
+
+    /* ── Section ── */
+    .section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 56px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .section-label::before {
+      content: '//';
+      font-family: var(--font-disp);
+      font-size: 14px;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-family: var(--font-disp);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      padding-left: 24px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Divider line */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .section-divider::after {
+      content: '';
+      position: absolute;
+      left: 0; top: -1px;
+      width: 40px; height: 3px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    /* ── Progress ── */
+    .progress-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .progress-label {
+      font-family: var(--font-disp);
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+    }
+
+    .progress-pct {
+      font-family: var(--font-disp);
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--cyan);
+    }
+
+    .progress-bar-wrap {
+      height: 10px;
+      background: rgba(0,245,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 16px;
+      border: 1px solid rgba(0,245,255,0.1);
+    }
+
+    /* LED segment effect */
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--magenta), var(--cyan));
+      position: relative;
+      transition: width 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 8px;
+      background: #fff;
+      opacity: 0.6;
+      box-shadow: 0 0 12px var(--cyan), 0 0 24px var(--cyan-glow);
+    }
+
+    /* Segment marks on bar */
+    .progress-segments {
+      display: flex;
+      height: 10px;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .progress-segments span {
+      flex: 1;
+      border-right: 1px solid rgba(3,8,20,0.6);
+    }
+    .progress-segments span:last-child { border-right: none; }
+
+    .progress-detail {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+    .progress-detail strong { color: var(--text); }
+
+    /* Summary mini cards */
+    .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .mini-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mini-card-label { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
+    .mini-card-val {
+      font-family: var(--font-disp);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 40px; }
+
+    /* Vertical neon line */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--cyan), var(--magenta), var(--border));
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateX(-16px);
+      animation: tl-in 0.5s ease forwards;
+    }
+    .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes tl-in { to { opacity:1; transform:translateX(0); } }
+
+    /* Dot with glow */
+    .tl-dot {
+      position: absolute;
+      left: -32px; top: 18px;
+      width: 28px; height: 28px;
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-disp);
+      font-size: 11px; font-weight: 700;
+      z-index: 1;
+      border: 2px solid;
+      background: var(--bg);
+    }
+    .tl-dot.paid    { border-color: var(--green);  color: var(--green);  box-shadow: 0 0 12px rgba(57,255,20,0.3); }
+    .tl-dot.pending { border-color: var(--text-dim); color: var(--text-dim); }
+
+    /* Connector line from dot to card */
+    .tl-line {
+      position: absolute;
+      left: -17px; top: 22px;
+      width: 14px; height: 1px;
+      background: var(--border);
+    }
+
+    .tl-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 18px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tl-card:hover {
+      border-color: rgba(0,245,255,0.4);
+      box-shadow: 0 0 20px rgba(0,245,255,0.08);
+    }
+
+    .tl-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .tl-card.paid::before    { background: var(--green);   box-shadow: 0 0 8px var(--green); }
+    .tl-card.pending::before { background: var(--text-dim); }
+
+    /* Status tag */
+    .tl-status {
+      position: absolute;
+      top: 14px; right: 16px;
+      font-family: var(--font-disp);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 2px 10px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+    .tl-status.paid    { color: var(--green);   border-color: var(--green);   background: rgba(57,255,20,0.08); }
+    .tl-status.pending { color: var(--text-dim); border-color: var(--border); background: transparent; }
+
+    .tl-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; padding-right: 60px; }
+    .tl-name   { font-weight: 600; font-size: 15px; color: var(--text); }
+    .tl-amount {
+      font-family: var(--font-disp);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .tl-amount.paid    { color: var(--green); }
+    .tl-amount.pending { color: var(--text-dim); }
+
+    .tl-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 0.03em; }
+
+    /* Progress mini bar */
+    .tl-prog { height: 4px; background: rgba(0,245,255,0.08); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+    .tl-prog-fill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      transition: width 1.2s ease;
+    }
+
+    .tl-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); font-family: var(--font-disp); letter-spacing: 0.05em; }
+
+    /* ── Extra grid ── */
+    .extra-summary { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .chip {
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--bg-card);
+    }
+    .chip strong { color: var(--yellow); }
+
+    .extra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+
+    .extra-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: card-in 0.5s ease forwards;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .extra-card:hover {
+      border-color: rgba(255,215,0,0.3);
+      box-shadow: 0 0 16px rgba(255,215,0,0.06);
+    }
+    .extra-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--yellow);
+      opacity: 0.4;
+    }
+    .extra-card:nth-child(1) { animation-delay: 0.05s; }
+    .extra-card:nth-child(2) { animation-delay: 0.15s; }
+    .extra-card:nth-child(3) { animation-delay: 0.25s; }
+    .extra-card:nth-child(4) { animation-delay: 0.35s; }
+
+    .extra-left { display: flex; flex-direction: column; gap: 5px; }
+    .extra-desc { font-weight: 500; font-size: 14px; color: var(--text); }
+    .extra-date { font-size: 11px; color: var(--text-dim); font-family: var(--font-disp); letter-spacing: 0.05em; }
+    .extra-tag {
+      display: inline-block;
+      font-family: var(--font-disp);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin-top: 4px;
+      border: 1px solid;
+    }
+    .extra-tag.jiazhuang { color: var(--magenta); border-color: var(--magenta); background: rgba(255,45,120,0.06); }
+    .extra-tag.cailiao   { color: var(--yellow);  border-color: var(--yellow);  background: rgba(255,215,0,0.06); }
+
+    .extra-amount {
+      font-family: var(--font-disp);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--yellow);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      border-top: 1px solid var(--border2);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .summary-row { grid-template-columns: 1fr; }
+      .hero { padding: 56px 20px 80px; }
+      .tl-dot { width: 22px; height: 22px; left: -28px; font-size: 10px; }
+      .timeline { padding-left: 32px; }
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="cyber-badge">
+    <span class="dot"></span>
+    LIVE SYSTEM
+  </div>
+  <div class="hero-glitch" data-text="家的蜕变">家的蜕变</div>
+  <p class="hero-sub">// RENOVATION EXPENSE TRACKER v2.0 //</p>
+</section>
+
+<!-- Stats -->
+<div class="stats-wrap">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="corner-tr"></div><div class="corner-bl"></div>
+      <div class="stat-icon">🏠</div>
+      <div class="stat-label">CONTRACT TOTAL</div>
+      <div class="stat-value glow-yellow">¥100,922</div>
+      <div class="stat-sub">合同总价</div>
+    </div>
+    <div class="stat-card">
+      <div class="corner-tr"></div><div class="corner-bl"></div>
+      <div class="stat-icon">✅</div>
+      <div class="stat-label">PAID</div>
+      <div class="stat-value glow-cyan">¥47,865</div>
+      <div class="stat-sub">占合同 47.4%</div>
+    </div>
+    <div class="stat-card">
+      <div class="corner-tr"></div><div class="corner-bl"></div>
+      <div class="stat-icon">💸</div>
+      <div class="stat-label">EXTRA</div>
+      <div class="stat-value glow-mag">¥3,982</div>
+      <div class="stat-sub">合同外增项</div>
+    </div>
+    <div class="stat-card">
+      <div class="corner-tr"></div><div class="corner-bl"></div>
+      <div class="stat-icon">📊</div>
+      <div class="stat-label">TOTAL SPENT</div>
+      <div class="stat-value glow-green">¥51,847</div>
+      <div class="stat-sub">累计已付</div>
+    </div>
+  </div>
+</div>
+
+<!-- Progress -->
+<section class="section reveal">
+  <div class="section-label"><span class="section-title">OVERALL PROGRESS</span></div>
+  <div class="section-divider"></div>
+  <div class="progress-card">
+    <div class="progress-header">
+      <span class="progress-label">// CONTRACT PAYMENT PROGRESS</span>
+      <span class="progress-pct glow-cyan">47.4%</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" style="width:0%"></div>
+      <div class="progress-segments">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="progress-detail">
+      <span>已付 <strong>¥47,865</strong></span>
+      <span>待付 <strong>¥53,057</strong> (含差额调整)</span>
+    </div>
+    <div class="summary-row">
+      <div class="mini-card">
+        <span class="mini-card-label">合同内待付</span>
+        <span class="mini-card-val" style="color:var(--magenta)">¥50,457</span>
+      </div>
+      <div class="mini-card">
+        <span class="mini-card-label">合同外增项</span>
+        <span class="mini-card-val" style="color:var(--yellow)">¥3,982</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Timeline -->
+<section class="section">
+  <div class="section-label"><span class="section-title">PAYMENT STAGES</span></div>
+  <div class="section-divider"></div>
+  <p class="section-sub">合同总价 ¥100,922 · 四次节点验收付款</p>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="tl-dot paid">✓</div>
+      <div class="tl-line"></div>
+      <div class="tl-card paid">
+        <div class="tl-status paid">PAID</div>
+        <div class="tl-header">
+          <span class="tl-name">① 签约定金</span>
+          <span class="tl-amount paid">¥20,000</span>
+        </div>
+        <div class="tl-desc">选择装修公司，签订合同</div>
+        <div class="tl-prog"><div class="tl-prog-fill" style="width:100%"></div></div>
+        <div class="tl-meta">
+          <span>计划 ¥20,184 · 少付 ¥184</span>
+          <span>2026-04-10</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="tl-dot paid">✓</div>
+      <div class="tl-line"></div>
+      <div class="tl-card paid">
+        <div class="tl-status paid">PAID</div>
+        <div class="tl-header">
+          <span class="tl-name">② 施工图确认 / 选材确认</span>
+          <span class="tl-amount paid">¥27,865</span>
+        </div>
+        <div class="tl-desc">施工图确认，选材确认</div>
+        <div class="tl-prog"><div class="tl-prog-fill" style="width:100%"></div></div>
+        <div class="tl-meta">
+          <span>计划 ¥30,277 · 少付 ¥2,412</span>
+          <span>2026-04-10</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="tl-dot pending">③</div>
+      <div class="tl-line"></div>
+      <div class="tl-card pending">
+        <div class="tl-status pending">PENDING</div>
+        <div class="tl-header">
+          <span class="tl-name">③ 中期验收</span>
+          <span class="tl-amount pending">¥45,415</span>
+        </div>
+        <div class="tl-desc">土建、水电、吊顶完成，验收合格</div>
+        <div class="tl-prog"><div class="tl-prog-fill" style="width:0%"></div></div>
+        <div class="tl-meta">
+          <span>计划 ¥45,415 · 占比 45%</span>
+          <span>⏳ 待付款</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="tl-dot pending">④</div>
+      <div class="tl-line"></div>
+      <div class="tl-card pending">
+        <div class="tl-status pending">PENDING</div>
+        <div class="tl-header">
+          <span class="tl-name">④ 尾款</span>
+          <span class="tl-amount pending">¥5,046</span>
+        </div>
+        <div class="tl-desc">漆工、成品安装、橱柜定制，验收无误</div>
+        <div class="tl-prog"><div class="tl-prog-fill" style="width:0%"></div></div>
+        <div class="tl-meta">
+          <span>计划 ¥5,046 · 占比 5%</span>
+          <span>⏳ 待付款</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Extra -->
+<section class="section">
+  <div class="section-label"><span class="section-title">EXTRA EXPENSES</span></div>
+  <div class="section-divider"></div>
+  <p class="section-sub">合同外的额外支出，主动记录不漏项</p>
+
+  <div class="extra-summary">
+    <div class="chip">已付 <strong>¥3,982</strong></div>
+    <div class="chip">共 <strong>2</strong> 笔</div>
+  </div>
+
+  <div class="extra-grid">
+    <div class="extra-card">
+      <div class="extra-left">
+        <span class="extra-desc">除硬渣</span>
+        <span class="extra-date">2026-04-08</span>
+        <span class="extra-tag cailiao">建材施工</span>
+      </div>
+      <span class="extra-amount">¥2,240</span>
+    </div>
+    <div class="extra-card">
+      <div class="extra-left">
+        <span class="extra-desc">美缝和窗台石</span>
+        <span class="extra-date">2026-04-10</span>
+        <span class="extra-tag jiazhuang">个性化增项</span>
+      </div>
+      <span class="extra-amount">¥1,742</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  UPDATED: 2026-04-10 &nbsp;|&nbsp; SYSTEM: ONLINE &nbsp;|&nbsp; MAZHAOLIN.RENOVATION
+</div>
+
+<script>
+  // Animate progress bar
+  setTimeout(() => {
+    document.querySelector('.progress-bar-fill').style.width = '47.4%';
+  }, 400);
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
