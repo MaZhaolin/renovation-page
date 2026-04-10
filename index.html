@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家的蜕变 · 装修花销记录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F5F0EB;
+      --bg-card: #FDFBF8;
+      --primary: #B85C38;
+      --primary-light: #E8936A;
+      --accent: #D4A853;
+      --sage: #7A9E7F;
+      --sage-light: #A8C5AB;
+      --text: #2C2420;
+      --text-muted: #7A6E66;
+      --border: #E0D5CA;
+      --shadow: rgba(44, 36, 32, 0.08);
+      --radius: 16px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      background: linear-gradient(160deg, #2C2420 0%, #4A3530 60%, #6B4535 100%);
+      color: #fff;
+      padding: 72px 24px 88px;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(184,92,56,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(212,168,83,0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-content { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 100px; padding: 6px 16px; font-size: 13px;
+      color: rgba(255,255,255,0.7); margin-bottom: 24px; letter-spacing: 0.05em;
+    }
+    .hero-badge span {
+      width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.5; transform:scale(0.8); }
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px, 7vw, 68px);
+      font-weight: 700; line-height: 1.1;
+      margin-bottom: 16px; letter-spacing: -0.02em;
+    }
+    .hero h1 em { color: var(--primary-light); font-style: normal; }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,0.6); font-weight: 300; }
+
+    /* Stats */
+    .stats-bar { max-width: 900px; margin: -44px auto 0; padding: 0 24px; position: relative; z-index: 2; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .stat-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 22px 18px; text-align: center;
+      box-shadow: 0 4px 20px var(--shadow), 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+      opacity: 0; transform: translateY(20px);
+      animation: slideUp 0.5s ease forwards;
+    }
+    .stat-card:nth-child(2) { animation-delay: 0.08s; }
+    .stat-card:nth-child(3) { animation-delay: 0.16s; }
+    .stat-card:nth-child(4) { animation-delay: 0.24s; }
+    @keyframes slideUp { to { opacity:1; transform:translateY(0); } }
+    .stat-icon { font-size: 24px; margin-bottom: 10px; }
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 5px;
+    }
+    .stat-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; }
+    .stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; opacity: 0.7; }
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.sage   { color: var(--sage); }
+    .stat-value.primary{ color: var(--primary); }
+
+    /* Progress */
+    .section { max-width: 900px; margin: 0 auto; padding: 44px 24px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .progress-card {
+      background: var(--bg-card); border-radius: var(--radius); padding: 28px;
+      border: 1px solid var(--border); box-shadow: 0 4px 20px var(--shadow);
+    }
+    .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+    .progress-label { font-size: 14px; font-weight: 500; }
+    .progress-pct { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--primary); }
+    .progress-bar-wrap { height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+    .progress-bar-fill {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .progress-bar-fill::after {
+      content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 24px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35));
+    }
+    .progress-detail { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
+    .progress-detail strong { color: var(--text); }
+
+    /* Summary row */
+    .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .summary-item {
+      background: var(--bg); border-radius: 12px; padding: 16px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .summary-item-label { font-size: 13px; color: var(--text-muted); }
+    .summary-item-value { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+    .summary-item-value.sage { color: var(--sage); }
+    .summary-item-value.accent { color: var(--accent); }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px;
+      width: 2px; background: var(--border); border-radius: 2px;
+    }
+    .timeline-item {
+      position: relative; margin-bottom: 20px;
+      opacity: 0; transform: translateX(-10px); animation: slideRight 0.5s ease forwards;
+    }
+    .timeline-item:nth-child(1) { animation-delay: 0.05s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.15s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.25s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.35s; }
+    @keyframes slideRight { to { opacity:1; transform:translateX(0); } }
+    .timeline-dot {
+      position: absolute; left: -26px; top: 16px;
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; z-index: 1; border: 3px solid var(--bg);
+    }
+    .timeline-dot.paid    { background: var(--sage); color: #fff; }
+    .timeline-dot.current { background: var(--accent); color: #fff; animation: pulse 2s ease-in-out infinite; }
+    .timeline-dot.pending{ background: var(--border); color: var(--text-muted); }
+    .timeline-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 18px 22px; border: 1px solid var(--border);
+      box-shadow: 0 2px 10px var(--shadow); position: relative; overflow: hidden;
+    }
+    .timeline-card.paid::after {
+      content: '已付'; position: absolute; top: 12px; right: 16px;
+      background: var(--sage); color: #fff; font-size: 11px;
+      padding: 3px 10px; border-radius: 100px; font-weight: 500;
+    }
+    .timeline-card.pending::after {
+      content: '待付'; position: absolute; top: 12px; right: 16px;
+      background: var(--border); color: var(--text-muted); font-size: 11px;
+      padding: 3px 10px; border-radius: 100px;
+    }
+    .timeline-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .timeline-name { font-weight: 600; font-size: 15px; }
+    .timeline-amount { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+    .timeline-amount.paid { color: var(--sage); }
+    .timeline-amount.pending { color: var(--text-muted); }
+    .timeline-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .timeline-progress { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .timeline-progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--sage), var(--sage-light));
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .timeline-meta { display: flex; justify-content: space-between; margin-top: 7px; font-size: 11px; color: var(--text-muted); }
+
+    /* Extra expenses */
+    .extra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .extra-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 18px 20px; border: 1px solid var(--border);
+      box-shadow: 0 2px 10px var(--shadow);
+      display: flex; justify-content: space-between; align-items: center;
+      opacity: 0; transform: translateY(16px); animation: slideUp 0.5s ease forwards;
+    }
+    .extra-card:nth-child(1) { animation-delay: 0.05s; }
+    .extra-card:nth-child(2) { animation-delay: 0.15s; }
+    .extra-card:nth-child(3) { animation-delay: 0.25s; }
+    .extra-card:nth-child(4) { animation-delay: 0.35s; }
+    .extra-card:nth-child(5) { animation-delay: 0.45s; }
+    .extra-card:nth-child(6) { animation-delay: 0.55s; }
+    .extra-left { display: flex; flex-direction: column; gap: 4px; }
+    .extra-desc { font-weight: 500; font-size: 14px; }
+    .extra-date { font-size: 12px; color: var(--text-muted); }
+    .extra-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700; color: var(--primary);
+    }
+    .extra-tag {
+      display: inline-block; font-size: 10px; padding: 2px 8px;
+      border-radius: 100px; margin-top: 4px;
+    }
+    .extra-tag.jiazhuang { background: #FEF3E8; color: #C4704B; }
+    .extra-tag.cailiao   { background: #EEF3EE; color: #5A7A5A; }
+    .extra-tag.qita      { background: #F3EEF8; color: #6B5A9E; }
+
+    .extra-summary {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .extra-chip {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 100px; padding: 6px 14px; font-size: 13px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .extra-chip strong { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+    /* Footer */
+    .footer { text-align: center; padding: 40px 24px; font-size: 12px; color: var(--text-muted); opacity: 0.5; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .summary-row { grid-template-columns: 1fr; }
+      .hero { padding: 52px 20px 72px; }
+      .timeline { padding-left: 24px; }
+      .timeline-dot { left: -20px; width: 20px; height: 20px; font-size: 10px; }
+    }
+    @media (max-width: 400px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span></span>实时更新中</div>
+    <h1>家的蜕变<br><em>装修花销记录</em></h1>
+    <p class="hero-sub">记录每一步投入，见证新家的成长轨迹</p>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🏠</div>
+      <div class="stat-value accent">¥100,922</div>
+      <div class="stat-label">合同总价</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value sage">¥47,865</div>
+      <div class="stat-label">合同已付</div>
+      <div class="stat-sub">占合同 47.4%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💸</div>
+      <div class="stat-value primary">¥3,982</div>
+      <div class="stat-label">合同外增项</div>
+      <div class="stat-sub">额外自付</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-value sage">¥51,847</div>
+      <div class="stat-label">累计总花费</div>
+      <div class="stat-sub">全部已付</div>
+    </div>
+  </div>
+</div>
+
+<!-- Contract Progress -->
+<section class="section">
+  <div class="progress-card">
+    <div class="progress-header">
+      <span class="progress-label">📋 合同付款进度</span>
+      <span class="progress-pct">47.4%</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-detail">
+      <span>已付 <strong>¥47,865</strong></span>
+      <span>待付 <strong>¥53,057</strong>（含差额调整）</span>
+    </div>
+  </div>
+</section>
+
+<!-- Contract Payment Timeline -->
+<section class="section">
+  <h2 class="section-title">🔧 合同付款阶段</h2>
+  <p class="section-sub">合同总价 ¥100,922 · 四次节点验收付款</p>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot paid">✓</div>
+      <div class="timeline-card paid">
+        <div class="timeline-header">
+          <span class="timeline-name">① 签约定金</span>
+          <span class="timeline-amount paid">¥20,000</span>
+        </div>
+        <div class="timeline-desc">选择装修公司，签订合同</div>
+        <div class="timeline-progress"><div class="timeline-progress-fill" style="width:100%"></div></div>
+        <div class="timeline-meta">
+          <span>计划 ¥20,184 · 少付 ¥184</span><span>2026-04-10</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot paid">✓</div>
+      <div class="timeline-card paid">
+        <div class="timeline-header">
+          <span class="timeline-name">② 施工图确认 / 选材确认</span>
+          <span class="timeline-amount paid">¥27,865</span>
+        </div>
+        <div class="timeline-desc">施工图确认，选材确认</div>
+        <div class="timeline-progress"><div class="timeline-progress-fill" style="width:100%"></div></div>
+        <div class="timeline-meta">
+          <span>计划 ¥30,277 · 少付 ¥2,412</span><span>2026-04-10</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot pending">③</div>
+      <div class="timeline-card pending">
+        <div class="timeline-header">
+          <span class="timeline-name">③ 中期验收</span>
+          <span class="timeline-amount pending">¥45,415</span>
+        </div>
+        <div class="timeline-desc">土建、水电、吊顶完成，验收合格</div>
+        <div class="timeline-progress"><div class="timeline-progress-fill" style="width:0%"></div></div>
+        <div class="timeline-meta">
+          <span>计划 ¥45,415 · 占比 45%</span><span>⏳ 待付款</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot pending">④</div>
+      <div class="timeline-card pending">
+        <div class="timeline-header">
+          <span class="timeline-name">④ 尾款</span>
+          <span class="timeline-amount pending">¥5,046</span>
+        </div>
+        <div class="timeline-desc">漆工、成品安装、橱柜定制，验收无误</div>
+        <div class="timeline-progress"><div class="timeline-progress-fill" style="width:0%"></div></div>
+        <div class="timeline-meta">
+          <span>计划 ¥5,046 · 占比 5%</span><span>⏳ 待付款</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Extra Expenses -->
+<section class="section">
+  <h2 class="section-title">🧱 合同外增项</h2>
+  <p class="section-sub">合同外的额外支出，主动记录不漏项</p>
+
+  <div class="extra-summary">
+    <div class="extra-chip">已付 <strong style="color:var(--primary)">¥3,982</strong></div>
+    <div class="extra-chip">共 <strong>2 笔</strong></div>
+    <div class="extra-chip" style="color:var(--text-muted);font-size:12px">差额未含，实时更新</div>
+  </div>
+
+  <div class="extra-grid">
+    <div class="extra-card">
+      <div class="extra-left">
+        <span class="extra-desc">除硬渣</span>
+        <span class="extra-date">2026-04-08</span>
+        <span class="extra-tag cailiao">建材施工</span>
+      </div>
+      <span class="extra-amount">¥2,240</span>
+    </div>
+    <div class="extra-card">
+      <div class="extra-left">
+        <span class="extra-desc">美缝和窗台石</span>
+        <span class="extra-date">2026-04-10</span>
+        <span class="extra-tag jiazhuang">个性化增项</span>
+      </div>
+      <span class="extra-amount">¥1,742</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">数据更新时间：2026-04-10 · 马召林装修花销记录</div>
+
+<script>
+  // Animate progress bar on load
+  setTimeout(() => {
+    document.querySelector('.progress-bar-fill').style.width = '47.4%';
+  }, 400);
+</script>
+</body>
+</html>
